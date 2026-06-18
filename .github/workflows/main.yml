@@ -18,25 +18,12 @@ jobs:
           brew install make ldid xz
           echo "/opt/homebrew/opt/make/libexec/gnubin" >> $GITHUB_PATH
 
-      - name: Cache Theos
-        id: cache-theos
-        uses: actions/cache@v4
-        with:
-          path: ~/theos
-          key: theos-cache-v3-${{ runner.os }}
-          restore-keys: theos-cache-v3-
-
       - name: Setup Theos
-        run: |
-          if [ ! -d ~/theos ]; then
-            echo "Cloning Theos..."
-            git clone --recursive https://github.com/theos/theos.git ~/theos
-          else
-            echo "Using cached Theos"
-          fi
-          
-          echo "THEOS=$HOME/theos" >> $GITHUB_ENV
-          echo "THEOS_MAKE_PATH=$HOME/theos/makefiles" >> $GITHUB_ENV
+        uses: Randomblock1/theos-action@v1
+        with:
+          theos-dir: '~/theos'          # أو theos
+          theos-sdks: 'https://github.com/theos/sdks'  # SDKs الرسمية
+          # theos-sdks-branch: 'master'   # اختياري
 
       - name: Build Tweak
         run: |
