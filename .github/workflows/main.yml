@@ -18,12 +18,38 @@ jobs:
           brew install make ldid xz
           echo "/opt/homebrew/opt/make/libexec/gnubin" >> $GITHUB_PATH
 
-      - name: Setup Theos
-        uses: Randomblock1/theos-action@v1
+      - name: Cache Theos
+        id: cache-theos
+        uses: actions/cache@v4
         with:
-          theos-dir: '~/theos'          # أو theos
-          theos-sdks: 'https://github.com/theos/sdks'  # SDKs الرسمية
-          # theos-sdks-branch: 'master'   # اختياري
+          path: ~/theos
+          key: theos-cache-v4-${{ runner.os }}
+          restore-keys: theos-cache-v4-
+
+      - name: Setup Theos
+        run: |
+          if [ ! -d ~/theos ]; then
+            echo "Cloning Theos..."
+            git clone --recursive https://github.com/theos/theos.git ~/theos
+          else
+            echo "Using cached Theos"
+          fi
+         
+          echo "THEOS=$HOME/theos" >> $GITHUB_ENV
+          echo "THEOS_MAKE_PATH=$HOME/theos/makefiles" >> $GITHUB_ENV
+
+      - name: Setup Theos SDKs
+        run: |
+          mkdir -p $THEOS/sdks
+          cd $THEOS/sdks
+
+          # حمل SDK 13.7 (أو غيّره حسب مشروعك)
+          curl -LO https://github.com/theos/sdks/releases/download/master-146e41f/iPhoneOS13.7.sdk.tar.xz
+          tar -xJf iPhoneOS13.7.sdk.tar.xz
+          rm *.tar.xz
+
+          echo "SDKs installed:"
+          ls -la
 
       - name: Build Tweak
         run: |
