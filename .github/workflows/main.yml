@@ -46,7 +46,7 @@ jobs:
       - name: Upload DEB
         uses: actions/upload-artifact@v4
         with:
-          name: loly-tweak
+          name: xxx1-tweak
           path: packages/*.deb
           retention-days: 7
 
