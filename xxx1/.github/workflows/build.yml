@@ -1,0 +1,54 @@
+name: Build xxx1 Tweak
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Build Tools
+        run: |
+          brew install make ldid xz
+          echo "/opt/homebrew/opt/make/libexec/gnubin" >> $GITHUB_PATH
+
+      - name: Cache Theos
+        id: cache-theos
+        uses: actions/cache@v4
+        with:
+          path: ~/theos
+          key: theos-cache-v3-${{ runner.os }}
+          restore-keys: theos-cache-v3-
+
+      - name: Setup Theos
+        run: |
+          if [ ! -d ~/theos ]; then
+            echo "Cloning Theos..."
+            git clone --recursive https://github.com/theos/theos.git ~/theos
+          else
+            echo "Using cached Theos"
+          fi
+          
+          echo "THEOS=$HOME/theos" >> $GITHUB_ENV
+          echo "THEOS_MAKE_PATH=$HOME/theos/makefiles" >> $GITHUB_ENV
+
+      - name: Build Tweak
+        run: |
+          make clean
+          make package
+
+      - name: Upload DEB
+        uses: actions/upload-artifact@v4
+        with:
+          name: loly-tweak
+          path: packages/*.deb
+          retention-days: 7
+
+      - name: Show Build Result
+        run: ls -la packages/
