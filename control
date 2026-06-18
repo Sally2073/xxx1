@@ -1,0 +1,10 @@
+Package: com.yourcompany.xxx1
+Name: Hill Climb 2 Mod Menu
+Depends: mobilesubstrate
+Version: 1.71.4
+Architecture: iphoneos-arm
+Description: Hill Climb 2 Mod Menu by loly!
+Maintainer: loly
+Author: loly
+Section: Tweaks
+Homepage: 
